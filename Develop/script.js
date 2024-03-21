@@ -133,13 +133,20 @@ $(function () {
 
   // function to color code time blocks
   function colorTime(hour) {
-    if (hour < currentTime) {
-      $("#" + hour).addClass("past");
-    } else if (hour === currentTime) {
-      $("#" + hour).addClass("present");
-    } else {
-      $("#" + hour).addClass("future");
-    }
+    var currentHour = dayjs().hour();
+    $(".time-block").each(function () {
+      var blockHour = parseInt($(this).attr("id").split("-")[1]);
+      if (blockHour < currentHour) {
+        $(this).addClass("past");
+      } else if (blockHour === currentHour) {
+        $(this).removeClass("past");
+        $(this).addClass("present");
+      } else {
+        $(this).removeClass("past");
+        $(this).removeClass("present");
+        $(this).addClass("future");
+      }
+    });
   }
   var currentTime = dayjs().hour(); 
   colorTime(currentTime);
