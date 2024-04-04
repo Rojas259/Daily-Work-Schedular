@@ -1,158 +1,117 @@
 $(function () {
-  // Display current date
-  //click event to save user input to local storage
-  clickeventbutton = $(".saveBtn").on("click", function () {
-    var time = $(this).parent().attr("id");
-    var text = $(this).siblings(".description").val();
-    localStorage.setItem(time, text);
-  }
-  );
-
-  function hourAMPM(hour) {
+  function hourAmPm(hour) {
     if (hour === 0) {
       return "12AM";
     } else if (hour === 12) {
-     return "12PM";
-    } else if  (hour < 12) {
+      return "12PM";
+    } else if (hour < 12) {
       return hour + "AM";
     } else {
       return (hour - 12) + "PM";
     }
   }
+  var currentTime = dayjs().hour();
+  function colorTime(startingTime) {
 
-
-
-  function colorTime(startingTime){
-
-    var convertedTime = hourAMPM(startingTime);
-
+    var convertedTime = hourAmPm(startingTime);
     var scheduleBlock = $("<section></section>");
-
-    if (currentTime > startingTime){
-      // Make color green
+    if (currentTime > startingTime) {
       scheduleBlock.addClass("past");
     }
-
-    if (currentTime === startingTime){
-      // Make color red
-       scheduleBlock.addClass("present");
+    if (currentTime === startingTime) {
+      scheduleBlock.addClass("present");
     }
-    
-    if (currentTime < startingTime){
-      // Make color grey
+    if (currentTime < startingTime) {
+  
       scheduleBlock.addClass("future");
     }
-    
-    var BlockId = "hour -" + startingTime;
+    var blockId = "hour-" + startingTime;
     scheduleBlock.addClass("row time-block");
-    scheduleBlock.attr("id", BlockId);
+    scheduleBlock.attr("id", blockId);
     $(".container-lg").append(scheduleBlock);
 
-    varcalenderTime = $("<section></section>");
-    scheduleBlock.append(calenderTime);
-    calenderTime.text(convertedTime);
-    calenderTime.addClass("col-2 col-md-1 hour text-center py-3");
+    var calendarTime = $("<section></section>");
+    calendarTime.addClass("col-2 col-md-1 hour text-center py-3")
+    calendarTime.text(convertedTime);
+    scheduleBlock.append(calendarTime);
 
-    var calenderTask = $("<textares></textares>");
-    scheduleBlock.append(calenderTask);
-    calenderTask.text("convertTime");
-    calenderTask.addClass("btn saveBtn col-2 col-md-1");
+    var calendarTask = $("<textarea></textarea>");
+    calendarTask.addClass("col-8 col-md-10 description");
+    calendarTask.attr("rows", "3");
+    scheduleBlock.append(calendarTask);
 
     var calendarSave = $("<button></button>");
-    calendarSave.attr("aria-label", "save");
     calendarSave.addClass("btn saveBtn col-2 col-md-1");
-    calendarBlock.append(calendarSave);
+    calendarSave.attr("aria-label", "save");
+    scheduleBlock.append(calendarSave);
 
     var saveAnimation = $("<i></i>");
     saveAnimation.addClass("fas fa-save");
-    calendarSave.append(saveAnimation);
     saveAnimation.attr("aria-hidden", "true");
+    calendarSave.append(saveAnimation);
 
     startingTime++;
+  }
 
+  for (let i = 9; i <= 17; i++) {
+    colorTime(i);
   }
 
   var saveMessageDisplayed = false;
 
-  for (let i = 9; i <= 17; i++) {
-    colorTime(i);
-  };
-
-  function displaySaveNotication(message) {
+  function displaySaveNotification(message) {
     if (!saveMessageDisplayed) {
       var saveNotification = $("<section></section>");
       saveNotification.addClass("save-message text-center");
       saveNotification.text(message);
-      $(".container-lg").prepand(saveNotification);
+      $(".container-lg").prepend(saveNotification);
       saveMessageDisplayed = true;
     }
   }
 
   $(".btn").on("click", function () {
 
-    displaySaveNotication("Appointments Added to lcoalstorage");
-    console.log("button clicked");
-    
+    displaySaveNotification("Appointment Added to localstorage")
+    console.log("Button Clicked");
+
     var timeBlock = $(this).parent().attr("id");
     console.log("time: ", timeBlock);
 
     var userTask = $(this).prev().val();
-    console.log(userTask);
+    console.log(userTask)
 
-    function storeTasks(timeBlock, userTask){
-      var savedSchedule = JSON.parse(localStorage.getItem("savedSchedule")) || {};
+ 
+    function storeTasks(workTime, workTask) {
+      var savedSchedule = JSON.parse(localStorage.getItem("savedSchedule")) || [];
 
       var newTask = {
         workTime: timeBlock,
         workTask: userTask
       };
-      
+
       savedSchedule.push(newTask);
 
       localStorage.setItem("savedSchedule", JSON.stringify(savedSchedule));
     }
-
     storeTasks(timeBlock, userTask);
 
   });
 
   $(document).ready(function () {
-    var savedschedule = JSON.parse(localStorage.getItem("savedSchedule")) || [];
-    
-    savedschedule.forEach(function (task) {
+  
+    var savedSchedule = JSON.parse(localStorage.getItem("savedSchedule")) || [];
+
+
+    savedSchedule.forEach(function (task) {
       var textarea = $("#" + task.workTime).find("textarea");
       textarea.val(task.workTask);
     });
   });
 
-  function displayHour() {
-    $("#currenthour").text(currentHour);
-  }
-  
-  displayHour();
 
-  // function to color code time blocks
-  function colorTime(hour) {
-    var currentHour = dayjs().hour();
-    $(".time-block").each(function () {
-      var blockHour = parseInt($(this).attr("id").split("-")[1]);
-      if (blockHour < currentHour) {
-        $(this).addClass("past");
-      } else if (blockHour === currentHour) {
-        $(this).removeClass("past");
-        $(this).addClass("present");
-      } else {
-        $(this).removeClass("past");
-        $(this).removeClass("present");
-        $(this).addClass("future");
-      }
-    });
-  }
-  var currentTime = dayjs().hour(); 
-  colorTime(currentTime);
-  var currentHour = dayjs().hour();
 
-  // display current date
-  $('#currentDay').text(dayjs().format('dddd, MMMM D, YYYY'));
+  var currentDate = dayjs().format("dddd, MMMM DD");
+
+  $("#currentDay").text(currentDate);
 
 });
